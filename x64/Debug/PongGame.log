@@ -1,0 +1,15 @@
+﻿  Ball.cpp
+C:\Users\mendy\source\repos\PongGame\PongGame\Ball.cpp(18,22): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\mendy\source\repos\PongGame\PongGame\Ball.cpp(18,19): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\mendy\source\repos\PongGame\PongGame\Ball.cpp(18,16): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\mendy\source\repos\PongGame\PongGame\Ball.cpp(48,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Game.cpp
+C:\Users\mendy\source\repos\PongGame\PongGame\Game.cpp(87,23): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\mendy\source\repos\PongGame\PongGame\Game.cpp(92,23): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\mendy\source\repos\PongGame\PongGame\Game.cpp(104,57): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\mendy\source\repos\PongGame\PongGame\Game.cpp(104,44): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  Source.cpp
+  Generating Code...
+  PongGame.vcxproj -> C:\Users\mendy\source\repos\PongGame\x64\Debug\PongGame.exe
+  'pwsh.exe' is not recognized as an internal or external command,
+  operable program or batch file.
