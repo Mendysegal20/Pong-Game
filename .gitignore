@@ -1,0 +1,18 @@
+# Build folders
+x64/
+Debug/
+Release/
+*.exe
+*.obj
+*.pdb
+
+# VS config folders
+.vs/
+*.suo
+*.user
+*.VC.db
+*.VC.opendb
+
+# Intermediate folders
+[Bb]in/
+[Oo]bj/
