@@ -1,5 +1,5 @@
 #include "Game.h"
-#define WINNING_SCORE 2
+#define WINNING_SCORE 1
 
 
 Game::Game():
