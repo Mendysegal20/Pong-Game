@@ -2,12 +2,10 @@
 
 
 
-Ball::Ball(float pos_x, float pos_y, int speed_x, int speed_y, int r)
+Ball::Ball(float pos_x, float pos_y, float speed_x, float speed_y, int r)
 {
-    x = pos_x;
-    y = pos_y;
-    speedX = speed_x;
-    speedY = speed_y;
+	position = { pos_x, pos_y };
+	velocity = { speed_x, speed_y };
     radius = r;
 	WaitTime = 0;
 }
@@ -15,7 +13,7 @@ Ball::Ball(float pos_x, float pos_y, int speed_x, int speed_y, int r)
 
 void Ball::drawBall()
 {
-    DrawCircle(x, y, radius, WHITE);
+    DrawCircle(position.x, position.y, radius, WHITE);
 }
 
 
@@ -23,13 +21,12 @@ void Ball::update()
 {
     if(GetTime() - WaitTime >= 2.0f) // wait for 2 seconds before the next round starts
     {
-        /*isWaiting = false;*/
-        
-        x += speedX;
-        y += speedY;
+       
+        position.x += velocity.x;
+        position.y += velocity.y;
 
-        if (y - radius >= windowHeight || y + radius <= 0)
-            speedY *= -1;
+        if (position.y - radius >= windowHeight || position.y + radius <= 0)
+            velocity.y *= -1;
 	}
 }
 
@@ -37,14 +34,13 @@ void Ball::update()
 void Ball::resetBall()
 {
     
-    x = windowWidth / 2;
-    y = windowHeight / 2;
+    position.x = windowWidth / 2;
+    position.y = windowHeight / 2;
 
     int direction_choices[2] = { 1, -1 };
-    speedX *= direction_choices[GetRandomValue(0, 1)]; // left or right
-    speedY *= direction_choices[GetRandomValue(0, 1)]; // up or down
+    velocity.x *= direction_choices[GetRandomValue(0, 1)]; // left or right
+    velocity.y *= direction_choices[GetRandomValue(0, 1)]; // up or down
 
-	//isWaiting = true; // wait for a moment before the next round starts
     WaitTime = GetTime();
 }
 
@@ -57,10 +53,10 @@ int Ball::getRadius()
 
 float Ball::getX()
 {
-    return x;
+    return position.x;
 }
 
 float Ball::getY()
 {
-    return y;
+    return position.y;
 }

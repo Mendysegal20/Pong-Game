@@ -5,15 +5,15 @@
 class Ball
 {
 private:
-    float x, y;
+	Vector2 position;
     int radius;
     float WaitTime;
 
 public:
-
-    int speedX, speedY;
     
-    Ball(float pos_x, float pos_y, int speedX, int speedY, int r);
+    Vector2 velocity;
+    
+    Ball(float pos_x, float pos_y, float speedX, float speedY, int r);
 
     void drawBall();
 

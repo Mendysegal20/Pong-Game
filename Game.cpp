@@ -1,5 +1,6 @@
 #include "Game.h"
-#define WINNING_SCORE 1
+#include <cmath>
+#define WINNING_SCORE 2
 
 
 Game::Game():
@@ -79,18 +80,45 @@ void Game::loadAssets()
 
 
 
+bool Game::isBallCollide(Paddle paddle)
+{
+    if (CheckCollisionCircleRec(Vector2{ ball.getX(), ball.getY() },
+        ball.getRadius(), Rectangle{ paddle.getX(), paddle.getY(), (float)paddle.getWidth(), (float)paddle.getHeight()}))
+		return true;
+	
+    return false;
+}
+
+
+void Game::calculateBallVelocity(Paddle paddle)
+{
+    // calculate the angle of the ball's hit
+    float angle = calculateAngleCollision(paddle);
+
+    // calculate the overall speed. A combination of x velocity and y velocity
+    float speed = sqrt(pow(ball.velocity.x, 2) + pow(ball.velocity.y, 2));
+    //speed *= 1.05f;
+
+	// Determine the direction of the ball based on its position
+	// we could have take the ball x but it is more stable to take the paddle x 
+    // because the ball can pass the paddle by some pixels
+    float direction = paddle.getX() < windowWidth / 2 ? 1.0f : -1.0f; // determine the direction of the ball based on its position
+
+    // claculate the angle direction of x with cos, and angle direction of y with sin as in math
+    ball.velocity.x = direction * speed * std::cos(angle); // multiply by -1 to change direction
+    ball.velocity.y = -speed * std::sin(angle); // multiply by -1 because the Y system in raylib is the opposite from the math system
+}
 
 
 void Game::checkForCollisions()
 {
-    if (CheckCollisionCircleRec(Vector2{ ball.getX(), ball.getY() },
-        ball.getRadius(), Rectangle{ player.getX(), player.getY(), (float)player.getWidth(), (float)player.getHeight() }))
-        ball.speedX *= -1;
+    
+	if (isBallCollide(player))
+		calculateBallVelocity(player);
+        
 
-
-    if (CheckCollisionCircleRec(Vector2{ ball.getX(), ball.getY() },
-        ball.getRadius(), Rectangle{ cpuPaddle.getX(), cpuPaddle.getY(), (float)cpuPaddle.getWidth(), (float)cpuPaddle.getHeight() }))
-        ball.speedX *= -1;
+    else if (isBallCollide(cpuPaddle))
+        calculateBallVelocity(cpuPaddle);
 }
 
 
@@ -101,7 +129,7 @@ void Game::update()
 {
     ball.update();
     player.update();
-    cpuPaddle.update(ball.speedX, ball.getX(), ball.getY());
+    cpuPaddle.update(ball.velocity.x, ball.getX(), ball.getY());
     updateScore();
 }
 
@@ -110,13 +138,13 @@ void Game::update()
 
 void Game::updateScore()
 {
-    if (ball.getX() + ball.getRadius() / 2 >= windowWidth) // cpu wins
+    if (ball.getX() >= windowWidth) // cpu wins
     {
         cpuScore++;
         ball.resetBall();
     }
         
-    else if (ball.getX() - ball.getRadius() / 2 <= 0) // player wins
+    else if (ball.getX() <= 0) // player wins
     {
         playerScore++;
         ball.resetBall();
@@ -157,5 +185,29 @@ void Game::checkForWinner()
     else if (cpuScore == WINNING_SCORE)
         gameState = GameStates::CpuWon;
 }
+
+
+
+float Game::calculateAngleCollision(Paddle paddle)
+{
+	// if the ball collides with for example the top side of the paddle, 
+	// then, we take the middle of the paddle and subtract the ball's position from it
+	// then we get 1. if the ball was to hit the middle of the paddle, then the value will be 0
+	// and if the ball was to hit the bottom of the paddle, then the value will be -1
+	// any value in between will be a value between -1 and 1, which we can use to calculate the bounce angle
+    float relativeIntersectionY = (paddle.getY() + paddle.getHeight() / 2) - ball.getY();
+                                      
+
+	// Normalize the value to be between -1 and 1 so we get the 
+    // relative position of the ball-paddle collision by presentege
+    float normalizedRelativeIntersectionY = relativeIntersectionY / (paddle.getHeight() / 2);
+
+	// We multiply the normalized value by 45 degrees in radians (3.14f / 4)
+    return normalizedRelativeIntersectionY * (3.14f / 4); // 45 degrees in radians
+}
+
+
+
+
 
 

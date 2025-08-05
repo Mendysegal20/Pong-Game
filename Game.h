@@ -31,7 +31,10 @@ class Game
 	void updateScore();
 	void render();
 	void drawWinner(const char* winner);
+	bool isBallCollide(Paddle paddle);
 	void checkForCollisions();
+	float calculateAngleCollision(Paddle paddle);
+	void calculateBallVelocity(Paddle paddle);
 	
 
 

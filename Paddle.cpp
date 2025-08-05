@@ -3,18 +3,19 @@
 
 void Paddle::limitMovement()
 {
-    if (y <= 0)
-        y = 0;
+    if (position.y <= 0)
+        position.y = 0;
 
-    if (y + height >= GetScreenHeight())
-        y = GetScreenHeight() - height;
+    if (position.y + height >= GetScreenHeight())
+        position.y = GetScreenHeight() - height;
 }
 
 
 Paddle::Paddle(float pos_x, float pos_y, int w, int h, int Pspeed)
 {
-    x = pos_x;
-    y = pos_y;
+    /*x = pos_x;
+    y = pos_y;*/
+	position = { pos_x, pos_y };
     width = w;
     height = h;
     speed = Pspeed;
@@ -23,17 +24,17 @@ Paddle::Paddle(float pos_x, float pos_y, int w, int h, int Pspeed)
 
 void Paddle::draw()
 {
-    DrawRectangle(x, y, width, height, BLUE);
+    DrawRectangle(position.x, position.y, width, height, BLUE);
 }
 
 
 void Paddle::update()
 {
     if (IsKeyDown(KEY_UP))
-        y -= speed;
+        position.y -= speed;
 
     if (IsKeyDown(KEY_DOWN))
-        y += speed;
+        position.y += speed;
 
     limitMovement();
 }
@@ -41,13 +42,13 @@ void Paddle::update()
 
 float Paddle::getX()
 {
-    return x;
+    return position.x;
 }
 
 
 float Paddle::getY()
 {
-    return y;
+    return position.y;
 }
 
 

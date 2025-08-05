@@ -15,8 +15,8 @@ const int paddleWidth = 25;
 const int paddleHeight = 120;
 const int paddleColor = 6;
 
-const int ballSpeedX = 7;
-const int ballSpeedY = 7;
+const float ballSpeedX = 7;
+const float ballSpeedY = 7;
 const int radius = 15;
 
 
