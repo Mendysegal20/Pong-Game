@@ -26,6 +26,8 @@ const int fontSize = 80;
 
 const char bgPath[20] = "assets/bg.png";
 const char fontPath[30] = "assets/JosefinSans.ttf";
+const char losingSoundPath[30] = "assets/game-over-sound.mp3";
+const char winningSoundPath[30] = "assets/winning-sound.mp3";
 
 
 

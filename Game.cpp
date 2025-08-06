@@ -3,14 +3,17 @@
 #define WINNING_SCORE 2
 
 
-Game::Game():
+Game::Game() :
     ball(middleScreenX, middleScreenY, ballSpeedX, ballSpeedY, radius),
     player(paddlePosX, paddlePosY, paddleWidth, paddleHeight, paddleColor),
     cpuPaddle(cpuPaddlePosX, paddlePosY, paddleWidth, paddleHeight, paddleColor),
     backgroundTexture({ 0 }),
     font({ 0 }),
-	playerScore(0),
-	cpuScore(0),
+    gameOverSound({0}),
+    winningSound({ 0 }),
+    playerScore(0),
+    cpuScore(0),
+    isGameOverSoundPlayed(false),
     gameState(GameStates::NoWinner) {}
 
 
@@ -19,17 +22,33 @@ Game::~Game()
 {
     UnloadFont(font);
 	UnloadTexture(backgroundTexture);
+    UnloadSound(gameOverSound);
+    UnloadSound(winningSound);
+    CloseAudioDevice();
 }
 
 
 
 void Game::init()
-{
+{   
     InitWindow(windowWidth, windowHeight, "Pong Game");
     SetTargetFPS(60);
     loadAssets();
 }
 
+
+
+void Game::loadAssets()
+{
+    Image image = LoadImage(bgPath);
+    backgroundTexture = LoadTextureFromImage(image);
+    UnloadImage(image);
+    font = LoadFontEx(fontPath, fontSize, 0, 0);
+
+    InitAudioDevice();
+    gameOverSound = LoadSound(losingSoundPath);
+    winningSound = LoadSound(winningSoundPath);
+}
 
 
 
@@ -52,10 +71,12 @@ void Game::run()
                 break;
             
             case PlayerWon:
+                playEndGameSound();
                 drawWinner("You Won!");
                 break;
             
             case CpuWon:
+                playEndGameSound();
                 drawWinner("Cpu Won!");
                 break;
         }
@@ -65,62 +86,6 @@ void Game::run()
 
     CloseWindow();
 }
-
-
-
-
-
-void Game::loadAssets()
-{
-    Image image = LoadImage(bgPath);
-    backgroundTexture = LoadTextureFromImage(image);
-    UnloadImage(image);
-    font = LoadFontEx(fontPath, fontSize, 0, 0);
-}
-
-
-
-bool Game::isBallCollide(Paddle paddle)
-{
-    if (CheckCollisionCircleRec(Vector2{ ball.getX(), ball.getY() },
-        ball.getRadius(), Rectangle{ paddle.getX(), paddle.getY(), (float)paddle.getWidth(), (float)paddle.getHeight()}))
-		return true;
-	
-    return false;
-}
-
-
-void Game::calculateBallVelocity(Paddle paddle)
-{
-    // calculate the angle of the ball's hit
-    float angle = calculateAngleCollision(paddle);
-
-    // calculate the overall speed. A combination of x velocity and y velocity
-    float speed = sqrt(pow(ball.velocity.x, 2) + pow(ball.velocity.y, 2));
-    //speed *= 1.05f;
-
-	// Determine the direction of the ball based on its position
-	// we could have take the ball x but it is more stable to take the paddle x 
-    // because the ball can pass the paddle by some pixels
-    float direction = paddle.getX() < windowWidth / 2 ? 1.0f : -1.0f; // determine the direction of the ball based on its position
-
-    // claculate the angle direction of x with cos, and angle direction of y with sin as in math
-    ball.velocity.x = direction * speed * std::cos(angle); // multiply by -1 to change direction
-    ball.velocity.y = -speed * std::sin(angle); // multiply by -1 because the Y system in raylib is the opposite from the math system
-}
-
-
-void Game::checkForCollisions()
-{
-    
-	if (isBallCollide(player))
-		calculateBallVelocity(player);
-        
-
-    else if (isBallCollide(cpuPaddle))
-        calculateBallVelocity(cpuPaddle);
-}
-
 
 
 
@@ -165,13 +130,59 @@ void Game::render()
 
 
 
-
 void Game::drawWinner(const char* winner)
 {
     DrawTexture(backgroundTexture, 0, 0, WHITE);
     DrawTextEx(font, winner, Vector2{ windowWidth / 4.5f, windowHeight / 3.5f }, fontSize * 2, 0.0f, GREEN);
 }
 
+
+
+
+void Game::checkForCollisions()
+{
+
+    if (isBallCollide(player))
+        calculateBallVelocity(player);
+
+
+    else if (isBallCollide(cpuPaddle))
+        calculateBallVelocity(cpuPaddle);
+}
+
+
+
+
+void Game::calculateBallVelocity(Paddle paddle)
+{
+    // calculate the angle of the ball's hit
+    float angle = calculateAngleCollision(paddle);
+
+    // calculate the overall speed. A combination of x velocity and y velocity
+    float speed = sqrt(pow(ball.velocity.x, 2) + pow(ball.velocity.y, 2));
+    //speed *= 1.05f;
+
+    // Determine the direction of the ball based on its position
+    // we could have take the ball x but it is more stable to take the paddle x 
+    // because the ball can pass the paddle by some pixels
+    float direction = paddle.getX() < windowWidth / 2 ? 1.0f : -1.0f; // determine the direction of the ball based on its position
+
+    // claculate the angle direction of x with cos, and angle direction of y with sin as in math
+    ball.velocity.x = direction * speed * std::cos(angle); // multiply by -1 to change direction
+    ball.velocity.y = -speed * std::sin(angle); // multiply by -1 because the Y system in raylib is the opposite from the math system
+}
+
+
+
+
+bool Game::isBallCollide(Paddle paddle)
+{
+    if (CheckCollisionCircleRec(Vector2{ ball.getX(), ball.getY() },
+        ball.getRadius(), Rectangle{ paddle.getX(), paddle.getY(), (float)paddle.getWidth(), (float)paddle.getHeight() }))
+        return true;
+
+    return false;
+}
 
 
 
@@ -184,7 +195,9 @@ void Game::checkForWinner()
         
     else if (cpuScore == WINNING_SCORE)
         gameState = GameStates::CpuWon;
+        
 }
+
 
 
 
@@ -205,6 +218,28 @@ float Game::calculateAngleCollision(Paddle paddle)
 	// We multiply the normalized value by 45 degrees in radians (3.14f / 4)
     return normalizedRelativeIntersectionY * (3.14f / 4); // 45 degrees in radians
 }
+
+
+
+
+void Game::playEndGameSound()
+{
+    
+    // we play the appropriate end-game sound (win or lose), only once
+    if (!isGameOverSoundPlayed)
+    {   
+        if (gameState == GameStates::PlayerWon)
+            PlaySound(winningSound);
+           
+        else
+            PlaySound(gameOverSound); 
+
+        isGameOverSoundPlayed = true;
+    }   
+}
+
+
+
 
 
 

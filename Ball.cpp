@@ -25,7 +25,8 @@ void Ball::update()
         position.x += velocity.x;
         position.y += velocity.y;
 
-        if (position.y - radius >= windowHeight || position.y + radius <= 0)
+        // check for boundaries
+        if (position.y + radius >= windowHeight || position.y - radius <= 0)
             velocity.y *= -1;
 	}
 }

@@ -19,14 +19,16 @@ class Game
 	CpuPaddle cpuPaddle;
 	Texture2D backgroundTexture;
 	Font font;
+	Sound gameOverSound;
+	Sound winningSound;
 	GameStates gameState;
 
 	int playerScore;
 	int cpuScore;
+	bool isGameOverSoundPlayed;
 
 	void checkForWinner();
 	void loadAssets();
-	void draw();
 	void update();
 	void updateScore();
 	void render();
@@ -35,6 +37,7 @@ class Game
 	void checkForCollisions();
 	float calculateAngleCollision(Paddle paddle);
 	void calculateBallVelocity(Paddle paddle);
+	void playEndGameSound();
 	
 
 

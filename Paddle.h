@@ -5,7 +5,6 @@ class Paddle
 {
 
 protected:
-    /*float x, y;*/
 	Vector2 position;
     int width, height;
     int speed;

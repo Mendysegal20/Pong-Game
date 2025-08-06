@@ -21,6 +21,7 @@ void CpuPaddle::update(int ballDir, int ballX, int ballY)
             position.y += speed;
     }
 
+    // centralize the cpu paddle if the ball if on the oposite direction
     else if (paddleCenterY != middleScreenY)
         paddleCenterY > middleScreenY ? position.y -= speed : position.y += speed;
 }
