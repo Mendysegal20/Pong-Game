@@ -5,15 +5,12 @@
 
 Game::Game() :
     ball(middleScreenX, middleScreenY, ballSpeedX, ballSpeedY, radius),
-    player(paddlePosX, paddlePosY, paddleWidth, paddleHeight, paddleColor),
-    cpuPaddle(cpuPaddlePosX, paddlePosY, paddleWidth, paddleHeight, paddleColor),
-    backgroundTexture({ 0 }),
+    player(paddlePosX, paddlePosY, paddleWidth, paddleHeight, paddleSpeed),
+    cpuPaddle(cpuPaddlePosX, paddlePosY, paddleWidth, paddleHeight, paddleSpeed),
+    background({ 0 }),
     font({ 0 }),
-    gameOverSound({0}),
-    winningSound({ 0 }),
     playerScore(0),
     cpuScore(0),
-    isGameOverSoundPlayed(false),
     gameState(GameStates::NoWinner) {}
 
 
@@ -21,17 +18,14 @@ Game::Game() :
 Game::~Game()
 {
     UnloadFont(font);
-	UnloadTexture(backgroundTexture);
-    UnloadSound(gameOverSound);
-    UnloadSound(winningSound);
-    CloseAudioDevice();
+	UnloadTexture(background);
 }
 
 
 
 void Game::init()
 {   
-    InitWindow(windowWidth, windowHeight, "Pong Game");
+    InitWindow(windowWidth, windowHeight, "Pongi pongo");
     SetTargetFPS(60);
     loadAssets();
 }
@@ -41,13 +35,9 @@ void Game::init()
 void Game::loadAssets()
 {
     Image image = LoadImage(bgPath);
-    backgroundTexture = LoadTextureFromImage(image);
+    background = LoadTextureFromImage(image);
     UnloadImage(image);
     font = LoadFontEx(fontPath, fontSize, 0, 0);
-
-    InitAudioDevice();
-    gameOverSound = LoadSound(losingSoundPath);
-    winningSound = LoadSound(winningSoundPath);
 }
 
 
@@ -63,23 +53,24 @@ void Game::run()
         
         switch (gameState)
         {
+
             case NoWinner:
                 update();
                 checkForCollisions();
                 checkForWinner();
-                render();
                 break;
             
             case PlayerWon:
-                playEndGameSound();
-                drawWinner("You Won!");
-                break;
-            
             case CpuWon:
                 playEndGameSound();
-                drawWinner("Cpu Won!");
                 break;
         }
+        
+		// DataFrame{...} replaces the need to call the constructor.
+		// it creates a temporary object that is passed to the function
+        renderer.renderFrame(DataFrame{ background, font, ball, player, 
+                                        cpuPaddle, playerScore, 
+                                        cpuScore, gameState });
 
         EndDrawing();
     }
@@ -95,45 +86,27 @@ void Game::update()
     ball.update();
     player.update();
     cpuPaddle.update(ball.velocity.x, ball.getX(), ball.getY());
-    updateScore();
+    checkIfRoundEnded();
 }
 
 
 
 
-void Game::updateScore()
+void Game::checkIfRoundEnded()
 {
     if (ball.getX() >= windowWidth) // cpu wins
     {
-        cpuScore++;
+		cpuScore++;
+		soundManager.playLosingRoundSound();
         ball.resetBall();
     }
         
     else if (ball.getX() <= 0) // player wins
     {
-        playerScore++;
+		playerScore++;
+        soundManager.playWinningRoundSound();
         ball.resetBall();
     }
-}
-
-
-void Game::render()
-{
-    DrawTexture(backgroundTexture, 0, 0, WHITE);
-    DrawTextEx(font, TextFormat("%i", playerScore), Vector2{ 3 * textPosX, textPosY }, fontSize, 0.0f, GREEN);
-    DrawTextEx(font, TextFormat("%i", cpuScore), Vector2{textPosX, textPosY}, fontSize, 0.0f, GREEN);
-    ball.drawBall();
-    player.draw();
-    cpuPaddle.draw();
-}
-
-
-
-
-void Game::drawWinner(const char* winner)
-{
-    DrawTexture(backgroundTexture, 0, 0, WHITE);
-    DrawTextEx(font, winner, Vector2{ windowWidth / 4.5f, windowHeight / 3.5f }, fontSize * 2, 0.0f, GREEN);
 }
 
 
@@ -142,18 +115,31 @@ void Game::drawWinner(const char* winner)
 void Game::checkForCollisions()
 {
 
-    if (isBallCollide(player))
+    if (ball.isBallCollide(player))
+    {
+		soundManager.playBallHitPaddleSound();
         calculateBallVelocity(player);
+    }
+        
 
 
-    else if (isBallCollide(cpuPaddle))
+    else if (ball.isBallCollide(cpuPaddle))
+    {
+        soundManager.playBallHitPaddleSound();
         calculateBallVelocity(cpuPaddle);
+    }
+        
+
+    if (ball.getY() + ball.getRadius() >= windowHeight ||
+        ball.getY() - ball.getRadius() <= 0)
+    {
+        soundManager.playBallHitBoundsSound();
+    }
 }
 
 
 
-
-void Game::calculateBallVelocity(Paddle paddle)
+void Game::calculateBallVelocity(const Paddle& paddle)
 {
     // calculate the angle of the ball's hit
     float angle = calculateAngleCollision(paddle);
@@ -174,19 +160,6 @@ void Game::calculateBallVelocity(Paddle paddle)
 
 
 
-
-bool Game::isBallCollide(Paddle paddle)
-{
-    if (CheckCollisionCircleRec(Vector2{ ball.getX(), ball.getY() },
-        ball.getRadius(), Rectangle{ paddle.getX(), paddle.getY(), (float)paddle.getWidth(), (float)paddle.getHeight() }))
-        return true;
-
-    return false;
-}
-
-
-
-
 void Game::checkForWinner()
 {
     
@@ -195,13 +168,12 @@ void Game::checkForWinner()
         
     else if (cpuScore == WINNING_SCORE)
         gameState = GameStates::CpuWon;
-        
 }
 
 
 
 
-float Game::calculateAngleCollision(Paddle paddle)
+float Game::calculateAngleCollision(const Paddle& paddle)
 {
 	// if the ball collides with for example the top side of the paddle, 
 	// then, we take the middle of the paddle and subtract the ball's position from it
@@ -221,28 +193,12 @@ float Game::calculateAngleCollision(Paddle paddle)
 
 
 
-
 void Game::playEndGameSound()
-{
+{  
+    if (gameState == GameStates::PlayerWon)
+        soundManager.playWinningSound();
     
-    // we play the appropriate end-game sound (win or lose), only once
-    if (!isGameOverSoundPlayed)
-    {   
-        if (gameState == GameStates::PlayerWon)
-            PlaySound(winningSound);
-           
-        else
-            PlaySound(gameOverSound); 
-
-        isGameOverSoundPlayed = true;
-    }   
+    else
+        soundManager.playLosingSound();
 }
-
-
-
-
-
-
-
-
 

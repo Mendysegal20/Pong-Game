@@ -13,8 +13,6 @@ void Paddle::limitMovement()
 
 Paddle::Paddle(float pos_x, float pos_y, int w, int h, int Pspeed)
 {
-    /*x = pos_x;
-    y = pos_y;*/
 	position = { pos_x, pos_y };
     width = w;
     height = h;
@@ -22,7 +20,7 @@ Paddle::Paddle(float pos_x, float pos_y, int w, int h, int Pspeed)
 }
 
 
-void Paddle::draw()
+void Paddle::draw() const
 {
     DrawRectangle(position.x, position.y, width, height, BLUE);
 }
@@ -40,29 +38,29 @@ void Paddle::update()
 }
 
 
-float Paddle::getX()
+float Paddle::getX() const
 {
     return position.x;
 }
 
 
-float Paddle::getY()
+float Paddle::getY() const
 {
     return position.y;
 }
 
 
-int Paddle::getWidth()
+int Paddle::getWidth() const
 {
     return width;
 }
 
-int Paddle::getHeight()
+int Paddle::getHeight() const
 {
     return height;
 }
 
-int Paddle::getSpeed()
+int Paddle::getSpeed() const
 {
     return speed;
 }

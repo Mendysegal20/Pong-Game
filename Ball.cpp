@@ -1,4 +1,5 @@
 #include "Ball.h"
+#include "SoundManager.h"
 
 
 
@@ -11,7 +12,7 @@ Ball::Ball(float pos_x, float pos_y, float speed_x, float speed_y, int r)
 }
 
 
-void Ball::drawBall()
+void Ball::drawBall() const
 {
     DrawCircle(position.x, position.y, radius, WHITE);
 }
@@ -19,15 +20,31 @@ void Ball::drawBall()
 
 void Ball::update()
 {
-    if(GetTime() - WaitTime >= 2.0f) // wait for 2 seconds before the next round starts
+    if(GetTime() - WaitTime >= 1.2f) // wait for 2 seconds before the next round starts
     {
        
         position.x += velocity.x;
         position.y += velocity.y;
 
         // check for boundaries
-        if (position.y + radius >= windowHeight || position.y - radius <= 0)
+        if (position.y + radius >= windowHeight)
+        {
+			position.y = windowHeight - radius; // fix the ball position if it goes out of bounds
             velocity.y *= -1;
+        }
+
+        if (position.y -radius <= 0)
+        {
+            position.y = radius;
+            velocity.y *= -1;
+        }
+
+
+		// previous boundary check. Does not work for an edge case of the ball 
+		// being at the top or bottom edge. It does not fix the ball position
+        /*if (position.y + radius >= windowHeight || position.y - radius <= 0)
+            velocity.y *= -1;*/
+
 	}
 }
 
@@ -43,6 +60,17 @@ void Ball::resetBall()
     velocity.y *= direction_choices[GetRandomValue(0, 1)]; // up or down
 
     WaitTime = GetTime();
+}
+
+
+
+bool Ball::isBallCollide(const Paddle& paddle)
+{
+    if (CheckCollisionCircleRec(Vector2{ position.x, position.y },
+        radius, Rectangle{ paddle.getX(), paddle.getY(), (float)paddle.getWidth(), (float)paddle.getHeight() }))
+        return true;
+
+    return false;
 }
 
 
