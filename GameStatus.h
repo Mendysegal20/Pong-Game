@@ -4,5 +4,7 @@ enum GameStates
 {
 	NoWinner,
 	PlayerWon,
-	CpuWon
+	CpuWon,
+	ExitGameBtnClicked,
+	ReplayBtnClicked
 };

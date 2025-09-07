@@ -2,7 +2,8 @@
 #include "Constants.h"
 #include "SoundManager.h"
 #include "Renderer.h"
-#include "DataFrame.h"
+#include "GameRenderData.h"
+
 
 
 
@@ -32,12 +33,14 @@ private:
 
 	void checkForWinner();
 	void checkIfRoundEnded();
+	void checkForClickedButtons(const RendererActions& renderAction);
 	void loadAssets();
 	void update();
 	void checkForCollisions();
 	float calculateAngleCollision(const Paddle& paddle);
 	void calculateBallVelocity(const Paddle& paddle);
 	void playEndGameSound();
+	void restartGame();
 };
 
 

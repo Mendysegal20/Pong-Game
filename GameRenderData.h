@@ -15,7 +15,7 @@ without risking of null references because rfrerences must be initialized at cre
 and always point to a valid object.
 */ 
 
-struct DataFrame
+struct GameRenderData
 {
     const Texture2D& background;
     const Font& font;

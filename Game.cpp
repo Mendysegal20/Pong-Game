@@ -1,6 +1,7 @@
 #include "Game.h"
 #include <cmath>
-#define WINNING_SCORE 2
+#define WINNING_SCORE 1
+bool exitBtnClicked = false;
 
 
 Game::Game() :
@@ -45,7 +46,7 @@ void Game::loadAssets()
 void Game::run()
 {
     
-    while (!WindowShouldClose())
+    while (!(WindowShouldClose() || exitBtnClicked))
     {
 
         BeginDrawing();
@@ -64,14 +65,20 @@ void Game::run()
             case CpuWon:
                 playEndGameSound();
                 break;
+
+			case ExitGameBtnClicked:
+				exitBtnClicked = true;
+				break;
         }
         
 		// DataFrame{...} replaces the need to call the constructor.
 		// it creates a temporary object that is passed to the function
-        renderer.renderFrame(DataFrame{ background, font, ball, player, 
-                                        cpuPaddle, playerScore, 
-                                        cpuScore, gameState });
-
+        RendererActions renderAction =  renderer.renderFrame(
+                                        GameRenderData{ background, font, ball, player,
+                                        cpuPaddle, playerScore, cpuScore, gameState });
+        checkForClickedButtons(renderAction);
+        
+        
         EndDrawing();
     }
 
@@ -107,6 +114,15 @@ void Game::checkIfRoundEnded()
         soundManager.playWinningRoundSound();
         ball.resetBall();
     }
+}
+
+void Game::checkForClickedButtons(const RendererActions& renderAction)
+{
+    if(renderAction == RendererActions::ExitGame)
+        gameState = GameStates::ExitGameBtnClicked;
+    
+    /*else if(renderAction == RendererActions::Replay)
+		restartGame();*/
 }
 
 
@@ -200,5 +216,14 @@ void Game::playEndGameSound()
     
     else
         soundManager.playLosingSound();
+}
+
+
+void Game::restartGame()
+{
+    gameState = GameStates::NoWinner;
+    playerScore = 0;
+    cpuScore = 0;
+    ball.resetBall();
 }
 

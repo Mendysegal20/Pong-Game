@@ -62,7 +62,10 @@
     <ClInclude Include="GameStatus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DataFrame.h">
+    <ClInclude Include="GameRenderData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RendererActions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
