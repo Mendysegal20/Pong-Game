@@ -8,7 +8,6 @@ class Ball
 private:
 	Vector2 position;
     int radius;
-    float WaitTime;
 
 public:
     
@@ -29,6 +28,8 @@ public:
     float getY();
     
     int getRadius();
+
+	void speedUp();
 };
 
 

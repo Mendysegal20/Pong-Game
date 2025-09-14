@@ -1,33 +1,69 @@
-#pragma once
+﻿#pragma once
+#include <string>
 #include "GameRenderData.h"
-#include "RendererActions.h"
+#include "GameEvents.h"
+#include <iostream>
+#include <vector>
 
 
+
+struct Button
+{
+	Rectangle btnRec{};
+	std::string text = "II"; // pause symbol by default
+};
 
 
 class Renderer
 {
 
 public:
-
-	/*bool gameShuldClose = false;*/
 	
 	Renderer()
-	{
-		playBtnRec = { windowWidth / 2.0f - 250, windowHeight / 1.2f, 200, 50 };
-		ExitBtnRec = { windowWidth / 2.0f + 50, windowHeight / 1.2f, 200, 50 };
+	{	
+		readFile("credits.txt");
+		
+		homeScreenPlayButton.btnRec = { windowWidth / 2.0f - 100, windowHeight / 2.5f, 200, 50 };
+		homeScreenExitButton.btnRec = { windowWidth / 2.0f - 100, windowHeight / 2.0f, 200, 50 };
+		homeScreenCreditsButton.btnRec = { windowWidth / 2.0f - 100, windowHeight / 1.67f, 200, 50 };
+
+		CreditsScreenBackButton.btnRec = { windowWidth - 160, 50, 130, 50 };
+		playScreenPauseButton.btnRec = { windowWidth / 2.0f - 50, 20, 100, 50 };
+
+		
+		endScreenPlayButton.btnRec = { windowWidth / 2.0f - 250, windowHeight / 1.2f, 200, 50 };
+		endScreenExitButton.btnRec = { windowWidth / 2.0f + 50, windowHeight / 1.2f, 200, 50 };
 	}
 
-	RendererActions renderFrame(const GameRenderData& data) const;
+	void renderPlayScreen(const GameRenderData& data) const;
+	void renderHomeScreen(const GameRenderData& data) const;
+	void renderEndScreen(const GameRenderData& data) const;
+	void renderCreditsScreen(const GameRenderData& data) const;
+	void changePauseBtnText();
+
+
+	GameEvents checkForEvents();
 	
-	bool renderButton(const Rectangle& btnRec, const char* text, const Font& font,
+	void renderButton(const Rectangle& btnRec, const std::string& text, const Font& font,
 		const Color btnColor, const Color hoverColor, 
 		const Color clickedColor) const;
 
 
 private:
-	Rectangle playBtnRec;
-	Rectangle ExitBtnRec;
+	
+	Button homeScreenPlayButton;
+	Button homeScreenCreditsButton;
+	Button CreditsScreenBackButton;
+	Button homeScreenExitButton;
+	Button playScreenPauseButton;
+	Button endScreenPlayButton;
+	Button endScreenExitButton;
+
+
+	std::vector<std::string> creditText;
+
+	bool isBtnClicked(const Button& btn) const;
+	void readFile(const std::string& fileName);
 };
 
 

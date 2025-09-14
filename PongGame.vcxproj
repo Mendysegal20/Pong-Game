@@ -139,12 +139,12 @@
     <ClInclude Include="Ball.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="CpuPaddle.h" />
+    <ClInclude Include="GameEvents.h" />
     <ClInclude Include="GameRenderData.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameStatus.h" />
     <ClInclude Include="Paddle.h" />
     <ClInclude Include="Renderer.h" />
-    <ClInclude Include="RendererActions.h" />
     <ClInclude Include="SoundManager.h" />
   </ItemGroup>
   <ItemGroup>

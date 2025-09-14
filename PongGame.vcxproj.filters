@@ -65,7 +65,7 @@
     <ClInclude Include="GameRenderData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RendererActions.h">
+    <ClInclude Include="GameEvents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

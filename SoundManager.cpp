@@ -12,6 +12,7 @@ SoundManager::SoundManager()
 
 void SoundManager::loadAssets()
 {
+	homeScreenSound = LoadSound(homeScreenSoundPath);
 	winningRoundSound = LoadSound(winningRoundSoundPath);
 	losingRoundSound = LoadSound(losingRoundSoundPath);
 	winningSound = LoadSound(winningSoundPath);
@@ -24,6 +25,7 @@ void SoundManager::loadAssets()
 
 SoundManager::~SoundManager()
 {
+	UnloadSound(homeScreenSound);
 	UnloadSound(winningRoundSound);
 	UnloadSound(losingRoundSound);
 	UnloadSound(winningSound);
@@ -33,6 +35,16 @@ SoundManager::~SoundManager()
 	CloseAudioDevice();
 }
 
+
+
+void SoundManager::playHomeScreenSound()
+{
+	if(!isHomeScreenSoundPlaying)
+	{
+		isHomeScreenSoundPlaying = true;
+		PlaySound(homeScreenSound);
+	}
+}
 
 
 void SoundManager::playWinningRoundSound()
@@ -77,6 +89,24 @@ void SoundManager::playBallHitPaddleSound()
 {
 	PlaySound(ballHitPaddleSound);
 }
+
+
+
+void SoundManager::stopHomeScreenSound()
+{
+	isHomeScreenSoundPlaying = false;
+	StopSound(homeScreenSound);
+}
+
+
+void SoundManager::stopEndGameSounds()
+{
+	isGameOverSoundPlayed = false;
+	StopSound(winningSound);
+	StopSound(losingSound);
+}
+
+
 
 
 

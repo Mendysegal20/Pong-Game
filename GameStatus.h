@@ -2,9 +2,11 @@
 
 enum GameStates
 {
+	HomeScreen,
+	displayCredits,
 	NoWinner,
 	PlayerWon,
 	CpuWon,
-	ExitGameBtnClicked,
-	ReplayBtnClicked
+	Pause,
+	Exit
 };

@@ -1,49 +1,89 @@
-#include "Renderer.h"
-#include <string.h>
+﻿#include "Renderer.h"
+#include <fstream>
+#include <sstream>
 
 
-// This function draws the entire frame based on the game state, including the frame logic
-RendererActions Renderer::renderFrame(const GameRenderData& data) const
-{ 
-    DrawTexture(data.background, 0, 0, WHITE);
-
-    bool exitBtnClicked = false;
-
-    if(data.gameState == GameStates::NoWinner)
-    {
-        DrawTextEx(data.font, TextFormat("%i", data.playerScore), Vector2{ 3 * textPosX, textPosY }, fontSize, 0.0f, GREEN);
-        DrawTextEx(data.font, TextFormat("%i", data.cpuScore), Vector2{ textPosX, textPosY }, fontSize, 0.0f, GREEN);
-        data.ball.drawBall();
-        data.player.draw();
-        data.cpuPaddle.draw();
-	}
-    else
-    {
-        const char* winner = data.gameState == GameStates::PlayerWon ? "You Won!" : "CPU Won!";
-		DrawTextEx(data.font, winner, Vector2{ windowWidth / 3.5f, windowHeight / 3.5f }, fontSize * 2, 0.0f, GREEN);
-        renderButton(playBtnRec,"Replay", data.font, GREEN, DARKGREEN, LIME);
-        exitBtnClicked = renderButton(ExitBtnRec, "Exit", data.font, RED, MAROON, BEIGE);
-    }
-
-	/*return exitBtnClicked;*/
-	return exitBtnClicked ? RendererActions::ExitGame : RendererActions::Render;
+void Renderer::renderPlayScreen(const GameRenderData& data) const
+{   
+    DrawTextEx(data.font, TextFormat("%i", data.playerScore), Vector2{ 3 * textPosX, textPosY }, fontSize, 0.0f, GREEN);
+    DrawTextEx(data.font, TextFormat("%i", data.cpuScore), Vector2{ textPosX, textPosY }, fontSize, 0.0f, GREEN);
+	renderButton(playScreenPauseButton.btnRec, playScreenPauseButton.text, data.font, BLUE, DARKBLUE, DARKPURPLE);
+    data.ball.drawBall();
+    data.player.draw();
+    data.cpuPaddle.draw();
 }
 
 
-bool Renderer::renderButton(const Rectangle& btnRec, const char* text, const Font& font, 
-    const Color btnColor, const Color hoverColor, const Color clickedColor) const
+
+
+void Renderer::renderHomeScreen(const GameRenderData& data) const
+{
+    renderButton(homeScreenPlayButton.btnRec,"Play", data.font, GREEN, DARKGREEN, LIME);
+    renderButton(homeScreenExitButton.btnRec, "Exit", data.font, RED, MAROON, BEIGE);
+	renderButton(homeScreenCreditsButton.btnRec, "Credits", data.font, BLUE, DARKBLUE, SKYBLUE);
+}
+
+
+
+
+void Renderer::renderEndScreen(const GameRenderData& data) const
+{
+    // implement better end screen later
+    const char* winner = data.gameState == GameStates::PlayerWon ? "You Won!" : "CPU Won!";
+    DrawTextEx(data.font, winner, Vector2{ windowWidth / 3.5f, windowHeight / 3.5f }, fontSize * 2, 0.0f, GREEN);
+    renderButton(endScreenPlayButton.btnRec,"Replay", data.font, GREEN, DARKGREEN, LIME);
+    renderButton(endScreenExitButton.btnRec, "Exit", data.font, RED, MAROON, BEIGE);
+}
+
+
+
+void Renderer::readFile(const std::string& fileName)
+{
+    std::ifstream file("assets/" + fileName);
+    if(!file.is_open())
+    {
+        std::cerr << "Failed to open the credits file: " << fileName << "\n";
+        return;
+	}
+
+    std::string line;
+
+    while(std::getline(file, line))
+        creditText.push_back(line);
+    
+    
+    file.close();
+}
+
+
+void Renderer::renderCreditsScreen(const GameRenderData& data) const
 {
 
-	bool isClicked = false;
+    Vector2 pos = { 0.05f * windowWidth, 0.05f * windowHeight};
+    
+    for (int i = 0; i < creditText.size(); i++)
+    {
+        DrawTextEx(data.font, creditText[i].c_str(),{pos.x + 1, pos.y + i * (fontSize + 5) + 1},
+			fontSize / 1.6f, 0.0f, DARKGRAY);
+
+        DrawTextEx(data.font, creditText[i].c_str(), { pos.x, pos.y + i * (fontSize + 5)},
+            fontSize / 1.6f, 0.0f, BLACK);
+    }
+
+	renderButton(CreditsScreenBackButton.btnRec, "Back", data.font,ORANGE , GOLD, YELLOW);
+}
+
+
+
+
+void Renderer::renderButton(const Rectangle& btnRec, const std::string& text, const Font& font, 
+    const Color btnColor, const Color hoverColor, const Color clickedColor) const
+{
 
     if(CheckCollisionPointRec(GetMousePosition(), btnRec))
     {
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
             DrawRectangleRounded(btnRec, 8, 2, clickedColor);
-			isClicked = true;
-			/*gameShuldClose = true;*/
-        }
             
 			
         else
@@ -64,7 +104,7 @@ bool Renderer::renderButton(const Rectangle& btnRec, const char* text, const Fon
 		   we do the same for pos y, but we also substract 4 to center it better
 		   because the text has the letter y that goes below the line a bit
     */ 
-    Vector2 textSize = MeasureTextEx(font, text, fontSize / 1.5, 0.0f);
+    Vector2 textSize = MeasureTextEx(font, text.c_str(), fontSize / 1.5, 0.0f);
 	
     /* btnRec.x = begining of the button
        btnRec.width = width of the button
@@ -74,15 +114,61 @@ bool Renderer::renderButton(const Rectangle& btnRec, const char* text, const Fon
     Vector2 textPosition = { btnRec.x + (btnRec.width - textSize.x) / 2,
                             btnRec.y + (btnRec.height - textSize.y) / 2 - 4 };
 
-    DrawTextEx(font, text, textPosition, fontSize / 1.5, 2.0f, WHITE);
-
-	return isClicked;
+    DrawTextEx(font, text.c_str(), textPosition, fontSize / 1.5, 2.0f, WHITE);
 }
 
 
-//void Renderer::update(const Font& font)
-//{
-//	bool exitBtnClicked = renderButton(ExitBtnRec, "Exit", font, RED, MAROON, BEIGE);
-//}
+
+
+GameEvents Renderer::checkForEvents()
+{
+    if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    {   
+        if (isBtnClicked(homeScreenPlayButton))
+            return GameEvents::homeScreenPlayBtnClicked;
+        
+        else if (isBtnClicked(homeScreenExitButton))
+            return GameEvents::homeScreenExitBtnClicked;
+
+        else if(isBtnClicked(homeScreenCreditsButton))
+			return GameEvents::homeScreenCreditsBtnClicked;
+
+		else if (isBtnClicked(CreditsScreenBackButton))
+			return GameEvents::CreditsScreenBackBtnClicked;
+
+        else if (isBtnClicked(playScreenPauseButton))
+            return GameEvents::playScreenPauseBtnClicked;
+
+        else if(isBtnClicked(endScreenPlayButton))
+            return GameEvents::endScreenPlayBtnClicked;
+
+        else if(isBtnClicked(endScreenExitButton))
+			return GameEvents::endScreenExitBtnClicked;
+	}
+
+    /*else if(IsKeyPressed(KEY_SPACE))
+		return GameEvents::PauseBtnClicked;*/
+
+	return GameEvents::None;
+}
+
+
+
+
+bool Renderer::isBtnClicked(const Button& btn) const
+{
+    if (CheckCollisionPointRec(GetMousePosition(), btn.btnRec))
+        return true;
+
+    return false;
+}
+
+
+void Renderer::changePauseBtnText()
+{
+    playScreenPauseButton.text == "II" ?
+        playScreenPauseButton.text = ">" :
+        playScreenPauseButton.text = "II";
+}
 
 

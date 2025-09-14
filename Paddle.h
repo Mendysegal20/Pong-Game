@@ -7,13 +7,13 @@ class Paddle
 protected:
 	Vector2 position;
     int width, height;
-    int speed;
+    float speed;
     
     void limitMovement();
 
 public:
 
-    Paddle(float pos_x, float pos_y, int w, int h, int Pspeed);
+    Paddle(float pos_x, float pos_y, int w, int h, float Pspeed);
 
     void draw() const;
     void update();
@@ -22,7 +22,9 @@ public:
     float getY() const;
     int getWidth() const;
     int getHeight() const;
-    int getSpeed() const;
+    float getSpeed() const;
+	void speedUp();
+	void resetSpeed();
 };
 
 

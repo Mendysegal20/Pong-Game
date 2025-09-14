@@ -1,4 +1,5 @@
 #include "Paddle.h"
+#include "Constants.h"
 
 
 void Paddle::limitMovement()
@@ -11,7 +12,7 @@ void Paddle::limitMovement()
 }
 
 
-Paddle::Paddle(float pos_x, float pos_y, int w, int h, int Pspeed)
+Paddle::Paddle(float pos_x, float pos_y, int w, int h, float Pspeed)
 {
 	position = { pos_x, pos_y };
     width = w;
@@ -60,9 +61,21 @@ int Paddle::getHeight() const
     return height;
 }
 
-int Paddle::getSpeed() const
+float Paddle::getSpeed() const
 {
     return speed;
+}
+
+
+void Paddle::speedUp()
+{
+    speed *= 1.03f;
+}
+
+
+void Paddle::resetSpeed()
+{
+    speed = paddleSpeed;
 }
 
 

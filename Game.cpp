@@ -1,7 +1,6 @@
-#include "Game.h"
+﻿#include "Game.h"
 #include <cmath>
-#define WINNING_SCORE 1
-bool exitBtnClicked = false;
+#define WINNING_SCORE 2
 
 
 Game::Game() :
@@ -10,9 +9,10 @@ Game::Game() :
     cpuPaddle(cpuPaddlePosX, paddlePosY, paddleWidth, paddleHeight, paddleSpeed),
     background({ 0 }),
     font({ 0 }),
+    /*iconsFont({ 0 }),*/
     playerScore(0),
     cpuScore(0),
-    gameState(GameStates::NoWinner) {}
+    gameState(GameStates::HomeScreen) {}
 
 
 
@@ -43,41 +43,62 @@ void Game::loadAssets()
 
 
 
+
 void Game::run()
 {
+    
+    // DataFrame{...} replaces the need to call the constructor.
+    // it creates a temporary object that is passed to the function
+    GameRenderData renderData{ background, font, ball, player,
+                           cpuPaddle, playerScore, cpuScore, gameState };
+
     
     while (!(WindowShouldClose() || exitBtnClicked))
     {
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
+        DrawTexture(background, 0, 0, WHITE);
         
         switch (gameState)
         {
 
+            case displayCredits:
+                renderer.renderCreditsScreen(renderData);
+				break;
+
+            case Pause:
+                renderer.renderPlayScreen(renderData);
+                break;
+
+
+            case HomeScreen:
+				soundManager.playHomeScreenSound();
+                renderer.renderHomeScreen(renderData);    
+				break;
+
+            
             case NoWinner:
                 update();
                 checkForCollisions();
                 checkForWinner();
+                renderer.renderPlayScreen(renderData);
                 break;
+            
             
             case PlayerWon:
             case CpuWon:
                 playEndGameSound();
+                renderer.renderEndScreen(renderData);
                 break;
 
-			case ExitGameBtnClicked:
+			
+            case Exit:
 				exitBtnClicked = true;
 				break;
         }
-        
-		// DataFrame{...} replaces the need to call the constructor.
-		// it creates a temporary object that is passed to the function
-        RendererActions renderAction =  renderer.renderFrame(
-                                        GameRenderData{ background, font, ball, player,
-                                        cpuPaddle, playerScore, cpuScore, gameState });
-        checkForClickedButtons(renderAction);
-        
+                            
+        EventHandler(renderer.checkForEvents());
         
         EndDrawing();
     }
@@ -88,9 +109,70 @@ void Game::run()
 
 
 
+void Game::EventHandler(const GameEvents& renderEvent)
+{
+    
+    switch (renderEvent)
+    {
+        case GameEvents::None:
+            break;
+        
+        case GameEvents::homeScreenPlayBtnClicked:
+            if (gameState == GameStates::HomeScreen)
+                startGame();
+			break;
+        
+        case GameEvents::homeScreenExitBtnClicked:
+            if (gameState == GameStates::HomeScreen)
+				gameState = GameStates::Exit;
+            break;
+
+
+        case GameEvents::homeScreenCreditsBtnClicked:
+            if (gameState == GameStates::HomeScreen)
+                gameState = GameStates::displayCredits;
+			break;
+
+        
+        case GameEvents::CreditsScreenBackBtnClicked:
+            if (gameState == GameStates::displayCredits)
+				gameState = GameStates::HomeScreen;
+            break;
+
+        
+        case GameEvents::playScreenPauseBtnClicked:
+            if (gameState == GameStates::Pause || gameState == GameStates::NoWinner)
+            {
+                if (gameState == GameStates::Pause)
+                    gameState = GameStates::NoWinner;
+
+                else if (gameState == GameStates::NoWinner)
+                    gameState = GameStates::Pause;
+
+                renderer.changePauseBtnText();
+            }
+			break;
+
+
+        case GameEvents::endScreenExitBtnClicked:
+            if (gameState == GameStates::PlayerWon || gameState == GameStates::CpuWon)
+				gameState = GameStates::Exit;
+			break;
+
+
+        case GameEvents::endScreenPlayBtnClicked:
+            if (gameState == GameStates::PlayerWon || gameState == GameStates::CpuWon)
+                restartGame();
+    }
+}
+
+
+
 void Game::update()
 {
-    ball.update();
+    if(GetTime() - waitTime >= 1.2f) // wait for 1.2 seconds before the next round starts
+        ball.update();
+    
     player.update();
     cpuPaddle.update(ball.velocity.x, ball.getX(), ball.getY());
     checkIfRoundEnded();
@@ -105,26 +187,16 @@ void Game::checkIfRoundEnded()
     {
 		cpuScore++;
 		soundManager.playLosingRoundSound();
-        ball.resetBall();
+        startNewRound();
     }
         
     else if (ball.getX() <= 0) // player wins
     {
 		playerScore++;
         soundManager.playWinningRoundSound();
-        ball.resetBall();
+        startNewRound();
     }
 }
-
-void Game::checkForClickedButtons(const RendererActions& renderAction)
-{
-    if(renderAction == RendererActions::ExitGame)
-        gameState = GameStates::ExitGameBtnClicked;
-    
-    /*else if(renderAction == RendererActions::Replay)
-		restartGame();*/
-}
-
 
 
 
@@ -134,6 +206,7 @@ void Game::checkForCollisions()
     if (ball.isBallCollide(player))
     {
 		soundManager.playBallHitPaddleSound();
+        increasePaddleBallSpeed();
         calculateBallVelocity(player);
     }
         
@@ -142,6 +215,7 @@ void Game::checkForCollisions()
     else if (ball.isBallCollide(cpuPaddle))
     {
         soundManager.playBallHitPaddleSound();
+        increasePaddleBallSpeed();
         calculateBallVelocity(cpuPaddle);
     }
         
@@ -154,6 +228,15 @@ void Game::checkForCollisions()
 }
 
 
+void Game::increasePaddleBallSpeed()
+{
+	ball.speedUp();
+	player.speedUp();
+	cpuPaddle.speedUp();  
+}
+
+
+
 
 void Game::calculateBallVelocity(const Paddle& paddle)
 {
@@ -162,7 +245,6 @@ void Game::calculateBallVelocity(const Paddle& paddle)
 
     // calculate the overall speed. A combination of x velocity and y velocity
     float speed = sqrt(pow(ball.velocity.x, 2) + pow(ball.velocity.y, 2));
-    //speed *= 1.05f;
 
     // Determine the direction of the ball based on its position
     // we could have take the ball x but it is more stable to take the paddle x 
@@ -173,6 +255,7 @@ void Game::calculateBallVelocity(const Paddle& paddle)
     ball.velocity.x = direction * speed * std::cos(angle); // multiply by -1 to change direction
     ball.velocity.y = -speed * std::sin(angle); // multiply by -1 because the Y system in raylib is the opposite from the math system
 }
+
 
 
 
@@ -191,11 +274,11 @@ void Game::checkForWinner()
 
 float Game::calculateAngleCollision(const Paddle& paddle)
 {
-	// if the ball collides with for example the top side of the paddle, 
-	// then, we take the middle of the paddle and subtract the ball's position from it
-	// then we get 1. if the ball was to hit the middle of the paddle, then the value will be 0
-	// and if the ball was to hit the bottom of the paddle, then the value will be -1
-	// any value in between will be a value between -1 and 1, which we can use to calculate the bounce angle
+	/* if the ball collides with for example the top side of the paddle, 
+	   then, we take the middle of the paddle and subtract the ball's position from it
+	   then we get 1. if the ball was to hit the middle of the paddle, then the value will be 0
+	   and if the ball was to hit the bottom of the paddle, then the value will be -1
+	   any value in between will be a value between -1 and 1, which we can use to calculate the bounce angle */
     float relativeIntersectionY = (paddle.getY() + paddle.getHeight() / 2) - ball.getY();
                                       
 
@@ -209,6 +292,7 @@ float Game::calculateAngleCollision(const Paddle& paddle)
 
 
 
+
 void Game::playEndGameSound()
 {  
     if (gameState == GameStates::PlayerWon)
@@ -219,11 +303,31 @@ void Game::playEndGameSound()
 }
 
 
+
+void Game::startGame()
+{
+    soundManager.stopHomeScreenSound();
+    startNewRound();
+}
+
+
+
 void Game::restartGame()
 {
-    gameState = GameStates::NoWinner;
+    soundManager.stopEndGameSounds();
     playerScore = 0;
     cpuScore = 0;
+    startNewRound();
+    
+}
+
+
+void Game::startNewRound()
+{  
+    gameState = GameStates::NoWinner;
+    player.resetSpeed();
+	cpuPaddle.resetSpeed();
     ball.resetBall();
+    waitTime = GetTime();
 }
 
