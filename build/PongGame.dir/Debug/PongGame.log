@@ -1,0 +1,8 @@
+﻿  Game.cpp
+C:\Users\mendy\source\repos\PongGame\PongGame\src\Game.cpp(9,69): warning C4244: 'argument': conversion from 'const float' to 'int', possible loss of data
+C:\Users\mendy\source\repos\PongGame\PongGame\src\Game.cpp(177,61): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\mendy\source\repos\PongGame\PongGame\src\Game.cpp(177,48): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\mendy\source\repos\PongGame\PongGame\src\Game.cpp(177,35): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\mendy\source\repos\PongGame\PongGame\src\Game.cpp(247,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\mendy\source\repos\PongGame\PongGame\src\Game.cpp(331,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  PongGame.vcxproj -> C:\Users\mendy\source\repos\PongGame\PongGame\build\Debug\PongGame.exe
