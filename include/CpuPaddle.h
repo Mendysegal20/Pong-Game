@@ -10,7 +10,7 @@ public:
     
     CpuPaddle(float pos_x, float pos_y, int w, int h, int Pspeed);
     
-    void update(int ballDir, int ballX, int ballY);
+    void update(int ballDir, int ballX, int ballY, const float dt);
 };
 
 

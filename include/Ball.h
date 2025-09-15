@@ -17,9 +17,9 @@ public:
 
     void drawBall() const;
 
-    void update();
+    void update(const float dt);
 
-    void resetBall();
+    void resetBall(const float speedX, const float speedY);
 
     bool isBallCollide(const Paddle& paddle);
 
@@ -29,7 +29,7 @@ public:
     
     int getRadius();
 
-	void speedUp();
+	void speedUp(const float dt);
 };
 
 

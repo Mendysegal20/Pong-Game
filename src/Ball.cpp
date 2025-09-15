@@ -17,11 +17,11 @@ void Ball::drawBall() const
 }
 
 
-void Ball::update()
+void Ball::update(const float dt)
 {
 
-    position.x += velocity.x;
-    position.y += velocity.y;
+    position.x += velocity.x * dt;
+    position.y += velocity.y * dt;
 
     // check for boundaries
     if (position.y + radius >= windowHeight)
@@ -30,7 +30,7 @@ void Ball::update()
         velocity.y *= -1;
     }
 
-    if (position.y -radius <= 0)
+    if (position.y - radius <= 0)
     {
         position.y = radius;
         velocity.y *= -1;
@@ -44,13 +44,13 @@ void Ball::update()
 }
 
 
-void Ball::resetBall()
+void Ball::resetBall(const float speedX, const float speedY)
 {
     
     position.x = windowWidth / 2;
     position.y = windowHeight / 2;
-	velocity.x = ballSpeedX;
-	velocity.y = ballSpeedY;
+	velocity.x = speedX;
+	velocity.y = speedY;
 
     int direction_choices[2] = { 1, -1 };
     velocity.x *= direction_choices[GetRandomValue(0, 1)]; // left or right
@@ -87,9 +87,9 @@ float Ball::getY()
 
 
 
-void Ball::speedUp()
+void Ball::speedUp(const float dt)
 {
-    velocity.x *= 1.03f;
-    velocity.y *= 1.03f;
+    velocity.x *= 1.03f * dt * 60.0f;
+    velocity.y *= 1.03f * dt * 60.0f;
 }
 

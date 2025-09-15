@@ -13,10 +13,10 @@ const int cpuPaddlePosX = 10;
 
 const int paddleWidth = 25;
 const int paddleHeight = 120;
-const float paddleSpeed = 7;
+const float paddleSpeed = 440;
 
-const float ballSpeedX = 7;
-const float ballSpeedY = 7;
+const float ballSpeedX = 440;
+const float ballSpeedY = 440;
 const int radius = 15;
 
 

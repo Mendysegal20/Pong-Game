@@ -27,13 +27,13 @@ void Paddle::draw() const
 }
 
 
-void Paddle::update()
+void Paddle::update(const float dt)
 {
     if (IsKeyDown(KEY_UP))
-        position.y -= speed;
+        position.y -= speed * dt;
 
     if (IsKeyDown(KEY_DOWN))
-        position.y += speed;
+        position.y += speed * dt;
 
     limitMovement();
 }
@@ -67,15 +67,15 @@ float Paddle::getSpeed() const
 }
 
 
-void Paddle::speedUp()
+void Paddle::speedUp(const float dt)
 {
-    speed *= 1.03f;
+    speed *= 1.03f * dt * 60.0f;
 }
 
 
-void Paddle::resetSpeed()
+void Paddle::resetSpeed(const float Pspeed)
 {
-    speed = paddleSpeed;
+    speed = Pspeed;
 }
 
 

@@ -6,7 +6,7 @@ CpuPaddle::CpuPaddle(float pos_x, float pos_y, int w, int h, int Pspeed)
 	:Paddle(pos_x, pos_y, w, h, Pspeed) {}
 
 
-void CpuPaddle::update(int ballDir, int ballX, int ballY)
+void CpuPaddle::update(int ballDir, int ballX, int ballY, const float dt)
 {
     
     int paddleCenterY = position.y + height / 2;
@@ -27,10 +27,10 @@ void CpuPaddle::update(int ballDir, int ballX, int ballY)
         {
             // follow the ball's trajectory
             if (paddleCenterY > ballY)
-                position.y -= speed;
+                position.y -= speed * dt;
 
             if (paddleCenterY < ballY)
-                position.y += speed;
+                position.y += speed * dt;
         } 
     }
     else
@@ -40,15 +40,15 @@ void CpuPaddle::update(int ballDir, int ballX, int ballY)
         int targetY = middleScreenY - height / 2;
 
 		// if the paddle center is not close enough to the middle of the screen
-        if(std::abs(paddleCenterY - middleScreenY) > speed)
+        if(std::abs(paddleCenterY - middleScreenY) > speed * dt)
         {
 			// if the paddle center is too low, then move it up
             if (paddleCenterY > middleScreenY)
-                position.y -= speed;
+                position.y -= speed * dt;
             
 			// if the paddle center is too high, then move it down
             else if (paddleCenterY < middleScreenY)
-                position.y += speed;
+                position.y += speed * dt;
 		}
 
 		/* if the paddle center is close enough to the middle of the screen

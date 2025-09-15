@@ -1,7 +1,7 @@
 # ----------------------------
 # Build folders
 # ----------------------------
-/build/          # כל ה‑build כולל Debug/Release ו־x64
+/build/
 
 # Executables and object files
 *.exe
@@ -17,32 +17,23 @@
 *.VC.db
 *.VC.opendb
 
-# ----------------------------
 # CMake intermediate files
-# ----------------------------
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
 
 # ----------------------------
-# Visual Studio project user files
+# Ignore any old project files
 # ----------------------------
 *.vcxproj.user
 *.vcxproj.filters
-*.vcxproj
 
 # ----------------------------
-# Intermediate folders
+# Keep assets and source
 # ----------------------------
-[Bb]in/
-[Oo]bj/
-
-# ----------------------------
-# Keep source and assets
-# ----------------------------
+!assets/
 !src/
 !include/
-!assets/
 !CMakeLists.txt
 !README.md

@@ -23,14 +23,13 @@ public:
 	{	
 		readFile("credits.txt");
 		
-		homeScreenPlayButton.btnRec = { windowWidth / 2.0f - 100, windowHeight / 2.5f, 200, 50 };
-		homeScreenExitButton.btnRec = { windowWidth / 2.0f - 100, windowHeight / 2.0f, 200, 50 };
-		homeScreenCreditsButton.btnRec = { windowWidth / 2.0f - 100, windowHeight / 1.67f, 200, 50 };
+		homeScreenPlayButton.btnRec = { windowWidth / 2.0f - 100, windowHeight / 2.5f - 60, 200, 50 };
+		homeScreenExitButton.btnRec = { windowWidth / 2.0f - 100, windowHeight / 2.5f + 60, 200, 50 };
+		homeScreenCreditsButton.btnRec = { windowWidth / 2.0f - 100, windowHeight / 2.5f + 180, 200, 50 };
 
-		CreditsScreenBackButton.btnRec = { windowWidth - 160, 50, 130, 50 };
+		CreditsScreenBackButton.btnRec = { windowWidth - 170, 40, 130, 50 };
 		playScreenPauseButton.btnRec = { windowWidth / 2.0f - 50, 20, 100, 50 };
 
-		
 		endScreenPlayButton.btnRec = { windowWidth / 2.0f - 250, windowHeight / 1.2f, 200, 50 };
 		endScreenExitButton.btnRec = { windowWidth / 2.0f + 50, windowHeight / 1.2f, 200, 50 };
 	}
@@ -44,7 +43,7 @@ public:
 
 	GameEvents checkForEvents();
 	
-	void renderButton(const Rectangle& btnRec, const std::string& text, const Font& font,
+	void renderButton(const Button& btn, const std::string& text, const Font& font,
 		const Color btnColor, const Color hoverColor, 
 		const Color clickedColor) const;
 
@@ -58,8 +57,6 @@ private:
 	Button playScreenPauseButton;
 	Button endScreenPlayButton;
 	Button endScreenExitButton;
-
-
 	std::vector<std::string> creditText;
 
 	bool isBtnClicked(const Button& btn) const;

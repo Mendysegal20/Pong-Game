@@ -9,7 +9,6 @@ Game::Game() :
     cpuPaddle(cpuPaddlePosX, paddlePosY, paddleWidth, paddleHeight, paddleSpeed),
     background({ 0 }),
     font({ 0 }),
-    /*iconsFont({ 0 }),*/
     playerScore(0),
     cpuScore(0),
     gameState(GameStates::HomeScreen) {}
@@ -56,6 +55,8 @@ void Game::run()
     while (!(WindowShouldClose() || exitBtnClicked))
     {
 
+		dt = GetFrameTime();
+
         BeginDrawing();
         ClearBackground(RAYWHITE);
         DrawTexture(background, 0, 0, WHITE);
@@ -79,7 +80,7 @@ void Game::run()
 
             
             case NoWinner:
-                update();
+                update(dt);
                 checkForCollisions();
                 checkForWinner();
                 renderer.renderPlayScreen(renderData);
@@ -168,13 +169,13 @@ void Game::EventHandler(const GameEvents& renderEvent)
 
 
 
-void Game::update()
+void Game::update(const float dt)
 {
     if(GetTime() - waitTime >= 1.2f) // wait for 1.2 seconds before the next round starts
-        ball.update();
+        ball.update(dt);
     
-    player.update();
-    cpuPaddle.update(ball.velocity.x, ball.getX(), ball.getY());
+    player.update(dt);
+    cpuPaddle.update(ball.velocity.x, ball.getX(), ball.getY(), dt);
     checkIfRoundEnded();
 }
 
@@ -230,9 +231,9 @@ void Game::checkForCollisions()
 
 void Game::increasePaddleBallSpeed()
 {
-	ball.speedUp();
-	player.speedUp();
-	cpuPaddle.speedUp();  
+	ball.speedUp(dt);
+	player.speedUp(dt);
+	cpuPaddle.speedUp(dt);  
 }
 
 
@@ -325,9 +326,9 @@ void Game::restartGame()
 void Game::startNewRound()
 {  
     gameState = GameStates::NoWinner;
-    player.resetSpeed();
-	cpuPaddle.resetSpeed();
-    ball.resetBall();
+    player.resetSpeed(paddleSpeed);
+	cpuPaddle.resetSpeed(paddleSpeed);
+    ball.resetBall(ballSpeedX, ballSpeedY);
     waitTime = GetTime();
 }
 

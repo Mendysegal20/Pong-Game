@@ -4,7 +4,6 @@
 #include "GameEvents.h"
 #include "Renderer.h"
 #include "GameRenderData.h"
-//#include <vector>
 
 
 
@@ -25,7 +24,6 @@ private:
 	CpuPaddle cpuPaddle;
 	Texture2D background;
 	Font font;
-	/*Font iconsFont;*/
 	GameStates gameState;
 	SoundManager soundManager;
 	Renderer renderer;
@@ -34,12 +32,13 @@ private:
 	int cpuScore = 0;
 	bool exitBtnClicked = false;
 	float waitTime = 0;
+	float dt = 0;
 
 	void checkForWinner();
 	void checkIfRoundEnded();
 	void EventHandler(const GameEvents& renderAction);
 	void loadAssets();
-	void update();
+	void update(const float dt);
 	void checkForCollisions();
 	float calculateAngleCollision(const Paddle& paddle);
 	void calculateBallVelocity(const Paddle& paddle);
