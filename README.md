@@ -14,6 +14,19 @@ https://github.com/user-attachments/assets/feb81bdf-9d3b-4563-bfff-6b3ae1b9ee40
 - [Catch2](https://github.com/catchorg/Catch2) (required to run the tests)
 
 
+## 1️⃣ For Visual Studio users (Windows)
+
+1. Open **Visual Studio**.  
+2. Go to **File → Clone Repository…**  
+3. Paste the URL:
+4. Choose a local folder and click **Clone**.
+5. Visual Studio will detect `CMakeLists.txt` automatically and configure the project.
+6. Build and run the game by clicking the **Run / Play** button.
+7. ✅ No need to manually run CMake or create build directories. Visual Studio handles that.
+
+
+
+## 2️⃣ For users on other platforms (Windows / Linux / macOS)
 ## Steps
   1. Clone the repository:
   - Go to bash
