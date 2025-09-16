@@ -14,23 +14,23 @@ https://github.com/user-attachments/assets/feb81bdf-9d3b-4563-bfff-6b3ae1b9ee40
 
 ### Steps
   1. Clone the repository:
-    ```bash
+       Go to bash
        git clone https://github.com/Mendysegal20/Pong-Game.git
        cd Pong-Game
 
   
-  2. Create a build directory:
+  3. Create a build directory:
     mkdir build
     cd build
 
-  3. Run CMake to generate build files:
+  4. Run CMake to generate build files:
     cmake ..
     
 
-  4. Build the project:
+  5. Build the project:
     cmake --build .
 
-  5. Run the game:
+  6. Run the game:
     On Windows - ./PongGame.exe
     On Linux - ./PongGame
     
