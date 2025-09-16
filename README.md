@@ -18,7 +18,7 @@ https://github.com/user-attachments/assets/feb81bdf-9d3b-4563-bfff-6b3ae1b9ee40
 
 1.  Open **Visual Studio**.  
 2.  Go to **File → Clone Repository…**  
-3.  Paste the URL:
+3.  Paste the URL: https://github.com/Mendysegal20/Pong-Game
 4.  Choose a local folder and click **Clone**.
 5.  Visual Studio will detect `CMakeLists.txt` automatically and configure the project.
 6.  Build and run the game by clicking the **Run / Play** button.
