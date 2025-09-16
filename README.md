@@ -8,9 +8,10 @@ https://github.com/user-attachments/assets/feb81bdf-9d3b-4563-bfff-6b3ae1b9ee40
 
 # 🚀 How to clone and build the project
 ### Requirements
-- [Git](https://git-scm.com/downloads)
-- [CMake](https://cmake.org/download/) (3.20+ recommended)
 - C++ compiler (Visual Studio / GCC / Clang)
+- [CMake](https://cmake.org/download/) (3.20+ recommended)
+- [raylib](https://www.raylib.com/) (required to build the game)  
+- [Catch2](https://github.com/catchorg/Catch2) (required to run the tests)
 
 
 ## Steps
