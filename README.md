@@ -12,7 +12,7 @@ https://github.com/user-attachments/assets/feb81bdf-9d3b-4563-bfff-6b3ae1b9ee40
 - [CMake](https://cmake.org/download/) (3.20+ recommended)
 - C++ compiler (Visual Studio / GCC / Clang)
 
-- ### Steps
+### Steps
   1. Clone the repository:
     ```bash
        git clone https://github.com/Mendysegal20/Pong-Game.git
