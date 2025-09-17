@@ -49,7 +49,7 @@
 
 
   5. Run the game:
-  -cd Release
+  cd Release
   - On Windows: 
       ./PongGame.exe
   - On Linux:
