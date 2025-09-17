@@ -41,15 +41,17 @@
 
 
   3. Run CMake to generate build files:
-  - cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake
-
+  - cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -A x64
 
 
   4. Build the project:
-  - cmake --build .
+  - cmake --build . --config Release
 
 
   5. Run the game:
-  - On Windows - ./PongGame.exe
-  - On Linux - ./PongGame
+  -cd Release
+  - On Windows: 
+      ./PongGame.exe
+  - On Linux:
+      ./PongGame
     
